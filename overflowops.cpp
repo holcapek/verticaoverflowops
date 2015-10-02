@@ -3,6 +3,7 @@
 using namespace Vertica;
 using namespace std;
 
+// https://github.com/postgres/postgres/blob/aa9eac45ea868e6ddabc4eb076d18be10ce84c6a/src/backend/utils/adt/int8.c#L28
 #define SAMESIGN(a,b) (((a)<0)==((b)<0))
 
 class OverflowAdd : public ScalarFunction
@@ -22,11 +23,10 @@ processBlock(
 		const vint b = arg_reader.getIntRef(1);
 		const vint c = a + b;
 
-		// https://github.com/postgres/postgres/blob/aa9eac45ea868e6ddabc4eb076d18be10ce84c6a/src/backend/utils/adt/int8.c#L513
 
-		// TODO handle c == vint_null
-		if (SAMESIGN(a, b) && !SAMESIGN(c, a))
-			vt_report_error(0, "vint out of range");
+		// https://github.com/postgres/postgres/blob/aa9eac45ea868e6ddabc4eb076d18be10ce84c6a/src/backend/utils/adt/int8.c#L513
+		if (SAMESIGN(a, b) && !SAMESIGN(c, a) || c == vint_null)
+			vt_report_error(0, "int out of range");
 
 		res_writer.setInt(c);
 		res_writer.next();
