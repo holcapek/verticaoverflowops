@@ -1,0 +1,3 @@
+compiler: gcc
+install: tar -xzvf vertica-sdk/vertica-sdk.tar.gz
+script: make VERTICA_SDK=opt/vertica/sdk
